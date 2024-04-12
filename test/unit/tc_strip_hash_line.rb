@@ -134,7 +134,7 @@ EOF
 
       actual_blocks << block
 
-      return :stop if actual_blocks.size == 3
+      actual_blocks.size == 3 ? :stop : nil
     end
 
     assert_nil actual

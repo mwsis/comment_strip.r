@@ -357,6 +357,36 @@ EOF_main
     assert_equal expected_blocks, actual_blocks
   end
 
+  def test_streaming_simple_main_with_trailing_cppcomment_and_divide_maths_stopping
+
+    input = <<-EOF_main
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    return 0 / 1; // same as EXIT_SUCCESS
+}
+EOF_main
+
+    expected_blocks = [
+      '#include <stdio.h>',
+      'int main(int argc, char* argv[])',
+      '{',
+      '    return 0 / 1; ',
+      '}',
+    ]
+    actual_blocks = []
+
+    actual = strip(input, :C) do |block|
+
+      actual_blocks << block
+
+      actual_blocks.size == 5 ? :stop : nil
+    end
+
+    assert_nil actual
+    assert_equal expected_blocks, actual_blocks
+  end
+
   def test_simple_main_with_ccomment
 
     input = <<-EOF_main
