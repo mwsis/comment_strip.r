@@ -46,6 +46,7 @@
 
   require File.join(File.dirname(__FILE__), 'language_families', name)
 end
+require 'comment_strip/exceptions'
 
 require 'xqsr3/quality/parameter_checking'
 
@@ -71,7 +72,10 @@ module CommentStrip
     # None currently defined.
     #
     # === Return
-    # (+String+) The stripped for of the input.
+    # (+String+) The stripped form of the input.
+    #
+    # === Exceptions
+    #   - +UnsupportedExceptionFamily+ Raised if the language family is unrecognised or not supported;
     #
     # === Supported language families
     # Currently supported language families:
@@ -91,7 +95,7 @@ module CommentStrip
             LanguageFamilies::HashLine.strip input, lf, **options
         else
 
-            raise "language family '#{lf}' unrecognised or not supported1"
+            raise Exceptions::UnsupportedExceptionFamily, "language family '#{lf}' unrecognised or is not supported"
         end
     end
 
