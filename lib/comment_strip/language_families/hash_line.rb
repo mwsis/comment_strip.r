@@ -5,7 +5,7 @@
 #           line comments beginning at the # character.
 #
 # Created:  1st December 2023
-# Updated:  31st March 2024
+# Updated:  12th April 2024
 #
 # Home:     http://github.com/synesissoftware/comment_strip.r
 #
@@ -39,6 +39,7 @@
 
 
 require 'xqsr3/quality/parameter_checking'
+
 
 =begin
 =end
@@ -99,9 +100,6 @@ module HashLine
         when :dq_string_escape
 
           state = :dq_string
-        when :hash_comment
-
-          state = :text
         end
       else
 

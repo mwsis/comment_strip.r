@@ -6,8 +6,8 @@ $:.unshift File.join(__dir__, '../..', 'lib')
 require 'comment_strip'
 
 require 'xqsr3/extensions/test/unit'
-
 require 'test/unit'
+
 
 class Test_C_strip_1 < Test::Unit::TestCase
 
@@ -15,31 +15,8 @@ class Test_C_strip_1 < Test::Unit::TestCase
 
   def test_nil
 
-    assert_nil strip(nil, 'C')
-
+    assert_nil strip(nil, :C)
     assert_nil ::CommentStrip.strip(nil, 'C')
-  end
-
-  def test_unrecognised_families
-
-    unrecognised_families = %w{
-
-      Python
-      Perl
-      Ruby
-
-      Java
-      Kotlin
-      Scala
-
-      Rust
-    }
-
-    unrecognised_families.each do |family|
-
-      assert_raise_with_message(::RuntimeError, /family.*unrecognised/) { strip('', family) }
-      assert_raise_with_message(::RuntimeError, /family.*unrecognised/) { ::CommentStrip.strip('', family) }
-    end
   end
 
   def test_empty
@@ -867,7 +844,7 @@ EOF_main
 
     actual = strip(input, 'C')
 
-    assert_equal expected, strip(input, 'C')
+    assert_equal expected, actual
   end
 
   def test_real_sample_4

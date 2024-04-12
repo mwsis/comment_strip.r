@@ -6,8 +6,8 @@ $:.unshift File.join(__dir__, '../..', 'lib')
 require 'comment_strip'
 
 require 'xqsr3/extensions/test/unit'
-
 require 'test/unit'
+
 
 class Test_version < Test::Unit::TestCase
 

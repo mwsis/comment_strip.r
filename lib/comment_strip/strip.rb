@@ -4,7 +4,7 @@
 # Purpose:  Definition of strip() function
 #
 # Created:  14th September 2020
-# Updated:  11th April 2024
+# Updated:  12th April 2024
 #
 # Home:     http://github.com/synesissoftware/comment_strip.r
 #
@@ -48,6 +48,7 @@
 end
 
 require 'xqsr3/quality/parameter_checking'
+
 
 =begin
 =end

@@ -6,8 +6,8 @@ $:.unshift File.join(__dir__, '../..', 'lib')
 require 'comment_strip'
 
 require 'xqsr3/extensions/test/unit'
-
 require 'test/unit'
+
 
 class Test_HashLine_strip_1 < Test::Unit::TestCase
 
@@ -16,13 +16,12 @@ class Test_HashLine_strip_1 < Test::Unit::TestCase
   def test_nil
 
     assert_nil strip(nil, :Hash_Line)
-
-    assert_nil ::CommentStrip.strip(nil, :Hash_Line)
+    assert_nil ::CommentStrip.strip(nil, 'Hash_Line')
   end
 
   def test_empty
 
-    assert_equal "", strip('', :Hash_Line)
+    assert_equal "", strip('', 'Hash_Line')
     assert_equal "", ::CommentStrip.strip('', :Hash_Line)
   end
 
