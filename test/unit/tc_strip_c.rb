@@ -325,6 +325,38 @@ EOF_main
     assert_equal expected, strip(input, 'C')
   end
 
+  def test_streaming_simple_main_with_trailing_cppcomment_and_divide_maths_to_completion
+
+    input = <<-EOF_main
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    return 0 / 1; // same as EXIT_SUCCESS
+}
+EOF_main
+    expected = <<-EOF_main
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    return 0 / 1; 
+}
+EOF_main
+
+    expected_blocks = [
+      '#include <stdio.h>',
+      'int main(int argc, char* argv[])',
+      '{',
+      '    return 0 / 1; ',
+      '}',
+    ]
+    actual_blocks = []
+
+    actual = strip(input, :C) { |block| actual_blocks << block }
+
+    assert_equal expected, actual
+    assert_equal expected_blocks, actual_blocks
+  end
+
   def test_simple_main_with_ccomment
 
     input = <<-EOF_main

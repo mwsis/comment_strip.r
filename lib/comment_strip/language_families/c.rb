@@ -4,7 +4,7 @@
 # Purpose:  Definition of strip() function for C-family languages.
 #
 # Created:  14th September 2020
-# Updated:  11th April 2024
+# Updated:  12th April 2024
 #
 # Home:     http://github.com/synesissoftware/comment_strip.r
 #
@@ -48,7 +48,7 @@ module LanguageFamilies
 
 module C
 
-  def self.strip input, lf, **options
+  def self.strip input, lf, **options, &blk
 
     return input if input.nil?
     return input if input.empty?
@@ -69,22 +69,36 @@ module C
     # - :sq_string_open     - within a single-quoted string, i.e. from immediately after "'"
     # - :text               - regular part of the code
 
-    state   =   :text
+    state     = :text
+    r         = ''
+    cc_lines  = 0
 
-    r       =   ''
-
-    cc_lines =   0
+    block     = blk.nil? ? nil : String.new
 
     input.each_char do |c|
 
+      is_eol =
       case c
       when ?\r, ?\n
 
         line += 1
         column = 0
+
+        if block
+
+          br = yield block
+
+          return nil if :stop == br
+
+          block = String.new
+        end
+
+        true
       else
 
         column += 1
+
+        false
       end
 
       skip = false
@@ -108,6 +122,8 @@ module C
 
           state = :dq_string
         when :slash_start
+
+          block.concat('/') if block
 
           r << '/'
 
@@ -136,7 +152,12 @@ module C
           case c
           when ?/
 
-            r << ?\n * cc_lines
+            eols = ?\n * cc_lines
+
+            block.concat(eols) if block
+
+            r << eols
+
             cc_lines = 0
 
             state = :text
@@ -154,6 +175,9 @@ module C
           elsif state == :slash_start && ('/' != c && '*' != c)
 
             state = :text
+
+            block.concat('/') if block
+
             r << '/'
           else
 
@@ -169,7 +193,12 @@ module C
                 state = :cpp_comment
               when :c_comment_star
 
-                r << ?\n * cc_lines
+                eols = ?\n * cc_lines
+
+                block.concat(eols) if block
+
+                r << eols
+
                 cc_lines = 0
 
                 state = :text
@@ -258,7 +287,15 @@ module C
         ;
       else
 
-        r << c unless skip
+        unless skip
+
+          unless is_eol
+
+            block.concat(c) if block
+          end
+
+          r << c
+        end
       end
     end
 

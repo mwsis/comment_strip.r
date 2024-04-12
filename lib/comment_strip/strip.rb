@@ -67,12 +67,13 @@ module CommentStrip
     #   - +input+ (+String+, +nil+) the input source code;
     #   - +lf+ (+String+) the name of the language family, which must be one of the following listed in the section below;
     #   - +options+ (+Hash+) options that moderate the behaviour;
+    #   - +blk+ (block) optional block, with arity of 1, for streaming, receiving a block at a time of stripped content. If it returns +:stop+ then stripping is terminated and +strip()+ returns +nil+;
     #
     # * *Options:*
-    # None currently defined.
+    #   - +:stream_by+ (+Symbol+) Determines the streaming block type, which may be one of +:line+ (assumed) or +:token+
     #
     # === Return
-    # (+String+) The stripped form of the input.
+    # +nil+ is returned if a block (+blk+) is specified and it returns the value +:stop+; otherwise, a +String+ is returned containing the stripped form of the input.
     #
     # === Exceptions
     #   - +UnsupportedExceptionFamily+ Raised if the language family is unrecognised or not supported;
@@ -81,7 +82,7 @@ module CommentStrip
     # Currently supported language families:
     #   - +'C'+ - including C, C++, C#, Go, Java, Rust;
     #   - +'Hash_Line'+ - include Ruby, Python, Ruby, shell;
-    def strip input, lf, **options
+    def strip input, lf, **options, &blk
 
         check_parameter input, 'input', responds_to: [ :each_char, :empty?, :nil?, ], nil: true
         check_parameter lf, 'lf', types: [ ::String, ::Symbol ]
@@ -89,10 +90,10 @@ module CommentStrip
         case lf.to_s.upcase
         when 'C'
 
-            LanguageFamilies::C.strip input, lf, **options
+            LanguageFamilies::C.strip input, lf, **options, &blk
         when 'HASH_LINE'
 
-            LanguageFamilies::HashLine.strip input, lf, **options
+            LanguageFamilies::HashLine.strip input, lf, **options, &blk
         else
 
             raise Exceptions::UnsupportedExceptionFamily, "language family '#{lf}' unrecognised or is not supported"

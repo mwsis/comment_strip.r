@@ -49,7 +49,7 @@ module LanguageFamilies
 
 module HashLine
 
-  def self.strip input, lf, **options
+  def self.strip input, lf, **options, &blk
 
     return input if input.nil?
     return input if input.empty?
@@ -67,25 +67,36 @@ module HashLine
     # - :sq_string_open     - within a single-quoted string, i.e. from immediately after "'"
     # - :text               - regular part of the code
 
-    state   =   :text
+    state     = :text
+    r         = ''
 
-    r       =   ''
-
-    cc_lines =   0
+    block     = blk.nil? ? nil : String.new
 
     input.each_char do |c|
 
+      is_eol =
       case c
       when ?\r, ?\n
 
         line += 1
         column = 0
+
+        if block
+
+          br = yield block
+
+          return nil if :stop == br
+
+          block = String.new
+        end
+
+        true
       else
 
         column += 1
-      end
 
-      skip = false
+        false
+      end
 
       case c
       when ?\r, ?\n
@@ -194,7 +205,12 @@ module HashLine
         ;
       else
 
-        r << c unless skip
+        r << c
+
+        unless is_eol
+
+          block.concat(c) if block
+        end
       end
     end
 

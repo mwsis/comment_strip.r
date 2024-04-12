@@ -88,6 +88,58 @@ EOF
 
     assert_equal expected, actual
   end
+
+  def test_streaming_with_multiple_lines_and_comments_to_completion
+
+  input = <<-EOF
+x=1#x=1
+y="abc"
+z=`pwd` # comment
+EOF
+  expected = <<-EOF
+x=1
+y="abc"
+z=`pwd` 
+EOF
+
+    expected_blocks = [
+      'x=1',
+      'y="abc"',
+      'z=`pwd` ',
+    ]
+    actual_blocks = []
+
+    actual = strip(input, :hash_line) { |block| actual_blocks << block }
+
+    assert_equal expected, actual
+    assert_equal expected_blocks, actual_blocks
+  end
+
+  def test_streaming_with_multiple_lines_and_comments_stopping
+
+  input = <<-EOF
+x=1#x=1
+y="abc"
+z=`pwd` # comment
+EOF
+
+    expected_blocks = [
+      'x=1',
+      'y="abc"',
+      'z=`pwd` ',
+    ]
+    actual_blocks = []
+
+    actual = strip(input, :hash_line) do |block|
+
+      actual_blocks << block
+
+      return :stop if actual_blocks.size == 3
+    end
+
+    assert_nil actual
+    assert_equal expected_blocks, actual_blocks
+  end
 end
 
 # ############################## end of file ############################# #
